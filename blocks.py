@@ -4,8 +4,6 @@ import torch.nn.functional as F
 
 
 class ConvBnRelu3(nn.Module):
-    """ classic combination: conv + batch normalization [+ relu] """
-
     def __init__(self, in_channels, out_channels, ksize, padding, do_act=True):
         super(ConvBnRelu3, self).__init__()
         self.conv = nn.Conv3d(in_channels, out_channels, kernel_size=ksize, padding=padding, groups=1)
@@ -22,8 +20,6 @@ class ConvBnRelu3(nn.Module):
 
 
 class BottConvBnRelu3(nn.Module):
-    """Bottle neck structure"""
-
     def __init__(self, channels, ratio, do_act=True):
         super(BottConvBnRelu3, self).__init__()
         self.conv1 = ConvBnRelu3(channels, channels // ratio, ksize=1, padding=0, do_act=True)
@@ -203,9 +199,6 @@ def gaussian_weight_init(m, conv_std=0.01, bn_std=0.01):
 #         shape = self.data.size()
 #         shape = [s // 2 for s in shape[2:]]
 #         print(list(out.size())[2:] == shape)
-
-# TODO
-# finish unit test code
 
 # if __name__ == '__main__':
 #     # test = MyTest()

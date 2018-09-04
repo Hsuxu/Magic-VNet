@@ -48,8 +48,8 @@ class VNet(nn.Module):
         self.down_256 = DownBlock(128, 3, use_bottle_neck=True)
         self.up_256 = UpBlock(256, 256, 3, use_bottle_neck=True)
         self.up_128 = UpBlock(256, 128, 3, use_bottle_neck=True)
-        self.up_64 = UpBlock(128, 64, 2, use_bottle_neck=False)
-        self.up_32 = UpBlock(64, 32, 1, use_bottle_neck=False)
+        self.up_64 = UpBlock(128, 64, 2, use_bottle_neck=True)
+        self.up_32 = UpBlock(64, 32, 1, use_bottle_neck=True)
         self.out_block = OutputBlock(32, num_classes)
 
         self.att256 = AttentionGate(in_channels=128, gate_channels=256, inner_channels=64)

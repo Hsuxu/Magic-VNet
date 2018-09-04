@@ -7,8 +7,8 @@ A [PyTorch](https://pytorch.org/) implementation of VNet with attention mechanis
 - Install [PyTorch](https://pytorch.org/) by selecting your environment on the website and running the appropriate command.
 - Clone this repository
     ```
-    git clone https://github.com/Hsuxu/vnet_attention.git
-    cd vnet_attention
+    git clone https://github.com/Hsuxu/vnet_attn.git
+    cd vnet_attn
     ```
 
 ## Prerequisites

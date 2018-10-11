@@ -1,7 +1,7 @@
-# vnet_attention
-
-A [PyTorch](https://pytorch.org/) implementation of VNet with attention mechanism for 3d volume segmentation.
-(PS: This repository only contain the network no data I/O including.  The network has not been tested on practical dataset due to computing resources. This repository is my personal project so will not update on weekdays.)
+# VNet Magic [Pytorch](https://pytorch.org/) Implements
+Incluing VNet with [Attention module](https://arxiv.org/abs/1804.03999), VNet with [Feature Pyramid Network](https://arxiv.org/abs/1612.03144) and [Atrous Spatial Pyramid Pooling](https://arxiv.org/abs/1706.05587)
+1. A serious of [PyTorch] implementations of VNet with different changes for 3d volume segmentation.
+(PS: This repository only contain the network module no data I/O including.  The network has not been tested on practical dataset due to computing resources.)
 
 ## Installation
 - Install [PyTorch](https://pytorch.org/) by selecting your environment on the website and running the appropriate command.
@@ -26,6 +26,4 @@ A [PyTorch](https://pytorch.org/) implementation of VNet with attention mechanis
 
 ---
 ## TODO
-- Add the network figure
-- Train the network on [PROMISE12](https://promise12.grand-challenge.org)
-- Add more flexible dataset 
+- Train the network on [PROMISE12](https://promise12.grand-challenge.org) 

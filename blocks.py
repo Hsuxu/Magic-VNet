@@ -184,27 +184,25 @@ def gaussian_weight_init(m, conv_std=0.01, bn_std=0.01):
         m.weight.data.normal_(1.0, bn_std)
         m.bias.data.zero_()
 
-# class MyTest(object):
-#     def __init__(self):
-#         self.data = torch.rand(1, 1, 32, 64, 64)
-#
-#     def test_InputBlock(self):
-#         model = InputBlock(self.data.size(1), out_channels=self.data.size(1))
-#         out = model(self.data)
-#         print(out.size() == self.data.size())
-#
-#     def test_downblock(self):
-#         model = DownBlock(1, 3)
-#         out = model(self.data)
-#         shape = self.data.size()
-#         shape = [s // 2 for s in shape[2:]]
-#         print(list(out.size())[2:] == shape)
+        
+class OutputBlock(nn.Module):
+    """ output block of v-net
 
-# if __name__ == '__main__':
-#     # test = MyTest()
-#     # test.test_downblock()
-#     gate = torch.rand(1, 16, 16, 32, 32)
-#     fea = torch.rand(1, 8, 32, 64, 64)
-#     model = AttentionGate(8, 16, 4)
-#     out=model(fea, gate)
-#     print(out.size(),fea.size())
+        The output is a list of foreground-background probability vectors.
+        The length of the list equals to the number of voxels in the volume
+    """
+
+    def __init__(self, in_channels, out_channels):
+        super(OutputBlock, self).__init__()
+        self.conv1 = nn.Conv3d(in_channels, out_channels, kernel_size=3, padding=1)
+        self.bn1 = nn.BatchNorm3d(out_channels)
+        self.act1 = nn.ReLU()
+        self.conv2 = nn.Conv3d(out_channels, out_channels, kernel_size=1)
+        self.softmax = nn.Softmax(dim=1)
+
+    def forward(self, input):
+        out = self.act1(self.bn1(self.conv1(input)))
+        out = self.conv2(out)
+        out = self.softmax(out)
+        return out        
+        

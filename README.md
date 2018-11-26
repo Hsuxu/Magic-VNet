@@ -1,4 +1,4 @@
-# [VNet](https://arxiv.org/abs/1606.04797) Magic [Pytorch](https://pytorch.org/) Implements
+# [VNet](https://arxiv.org/abs/1606.04797) Magic [PyTorch](https://pytorch.org/) Implements
 Incluing VNet with [Attention module](https://arxiv.org/abs/1804.03999), VNet with [Feature Pyramid Network](https://arxiv.org/abs/1612.03144) and [Atrous Spatial Pyramid Pooling](https://arxiv.org/abs/1706.05587)
 1. A serious of [PyTorch] implementations of VNet with different changes for 3d volume segmentation.
 (PS: This repository only contain the network module no data I/O including.  The network has not been tested on practical dataset due to computing resources.)

@@ -43,4 +43,4 @@ def test():
     out = model(data)
     print(out.size())
 
-test()
+# test()

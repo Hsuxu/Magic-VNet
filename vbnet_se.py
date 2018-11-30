@@ -43,4 +43,8 @@ def test():
     out = model(data)
     print(out.size())
 
+<<<<<<< HEAD
 # test()
+=======
+# test()
+>>>>>>> 5b9e7f37f44c9f0054dfedecde344f6ddbdd845c

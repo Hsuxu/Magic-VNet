@@ -25,7 +25,7 @@ pip install -r requirements.txt
 ```
 - import all modules in your codes
 ```
-from Magic_VNet import *
+from magic_vnet import *
 ```
 
 ## TODO

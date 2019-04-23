@@ -37,31 +37,46 @@ class BottConvBnRelu3(nn.Module):
         return out
 
 
-class SeBlock(nn.Module):
+class cSE(nn.Module):
     """
     reference:
     Squeeze-and-Excitation Networks
     Dual Attention Network for Scene Segmentation
     channel wise attention still
+    Concurrent Spatial and Channel ‘Squeeze & Excitation’ in Fully Convolutional Networks
     """
 
     def __init__(self, channels, ratio=8):
-        super(SeBlock, self).__init__()
+        super(cSE, self).__init__()
         # if not channels//ratio >0:
         #     raise ValueError
         self.avg_pool = nn.AdaptiveAvgPool3d(1)
-        self.fc = nn.Sequential(nn.Linear(channels, channels // ratio),
-                                nn.LeakyReLU(),
-                                nn.Linear(channels // ratio, channels),
+        self.fc = nn.Sequential(nn.Conv3d(channels, channels // ratio, kernel_size=1, padding=0),
+                                nn.ReLU(),
+                                nn.Conv3d(channels // ratio, channels, kernel_size=1, padding=0),
                                 nn.Sigmoid())
 
     def forward(self, input):
-        bs, chn, dim, hei, wid = input.size()
         scale = self.avg_pool(input)
-        scale = scale.view(bs, -1)
         scale = self.fc(scale)
-        scale = scale.view(bs, chn, 1, 1, 1)
         return scale * input
+
+
+class sSE(nn.Module):
+    """
+    reference:
+    Concurrent Spatial and Channel ‘Squeeze & Excitation’ in Fully Convolutional Networks
+    """
+    def __init__(self, channels):
+        super(sSE, self).__init__()
+        self.conv = nn.Conv3d(channels, 1, 1, padding=0)
+
+    def forward(self, input):
+        gate = self.conv(input)
+        gate = F.sigmoid(gate)
+        return input * gate
+
+
 
 
 class ResidualBlock3(nn.Module):

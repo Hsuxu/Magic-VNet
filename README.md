@@ -2,13 +2,6 @@
 
 This repository including some extension implements based original [VNet](https://arxiv.org/abs/1606.04797) network. (PS: The original VNet is not implemented)
 
-## Modules
-   
-1. [Feature Pyramid Network](https://arxiv.org/abs/1612.03144)
-2. [Attention module](https://arxiv.org/abs/1804.03999)
-3. [Atrous Spatial Pyramid Pooling](https://arxiv.org/abs/1706.05587)
-4. [Squeeze-and-Excitation Networks](https://arxiv.org/abs/1709.01507)
-
 ## Useage
 - Enter your project directory
 ```
@@ -36,3 +29,5 @@ from magic_vnet import *
 - [Concurrent Spatial and Channel ‘Squeeze & Excitation’ in Fully Convolutional Networks](https://arxiv.org/abs/1803.02579)
 - [Squeeze-and-Excitation Networks](https://arxiv.org/abs/1709.01507)
 - [Pyramid Scene Parsing Network](https://arxiv.org/abs/1612.01105)
+- [Attention U-Net: Learning Where to Look for the Pancreas](https://arxiv.org/abs/1804.03999)
+- [Rethinking Atrous Convolution for Semantic Image Segmentation](https://arxiv.org/abs/1706.05587)

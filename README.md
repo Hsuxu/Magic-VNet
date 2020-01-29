@@ -5,7 +5,7 @@ This repository including some extension implements based original [VNet](https:
 ## Useage
 - Enter your project directory
 ```
-cd [path to your projeaect]
+cd [path to your project]
 ```
 - Clone this repository
 ```

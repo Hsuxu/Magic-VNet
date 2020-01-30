@@ -62,19 +62,6 @@ class UpBlock(BasicUpBlock):
         self.res_block = nn.Sequential(*layers)
 
 
-class OutBlock(nn.Module):
-    def __init__(self, in_channels, out_channels, norm_type=nn.BatchNorm3d, act_type=nn.ReLU):
-        super(OutBlock, self).__init__()
-        self.conv = nn.Sequential(
-            ConvBnAct3d(in_channels, in_channels, norm_type=norm_type, act_type=act_type),
-            ConvBnAct3d(in_channels, out_channels, kernel_size=1, padding=0, norm_type=False, act_type=False),
-        )
-
-    def forward(self, input):
-        out = self.conv(input)
-        return out
-
-
 class VNet(nn.Module):
     def __init__(self, in_channels, num_class, norm_type=nn.BatchNorm3d, act_type=nn.ReLU, **kwargs):
         super(VNet, self).__init__()
@@ -137,8 +124,26 @@ class VNet(nn.Module):
         return out
 
 
+class VNet_CSE(VNet):
+    def __init__(self, in_channels, num_class, norm_type=nn.BatchNorm3d, act_type=nn.ReLU, **kwargs):
+        super(VNet_CSE, self).__init__(in_channels, num_class, norm_type, act_type,
+                                       se_type='cse')
+
+
+class VNet_SSE(VNet):
+    def __init__(self, in_channels, num_class, norm_type=nn.BatchNorm3d, act_type=nn.ReLU, **kwargs):
+        super(VNet_SSE, self).__init__(in_channels, num_class, norm_type, act_type,
+                                       se_type='sse')
+
+
+class VNet_SCSE(VNet):
+    def __init__(self, in_channels, num_class, norm_type=nn.BatchNorm3d, act_type=nn.ReLU, **kwargs):
+        super(VNet_SCSE, self).__init__(in_channels, num_class, norm_type, act_type,
+                                        se_type='scse')
+
+
 if __name__ == '__main__':
     data = torch.rand((1, 1, 32, 32, 32))
-    model = VNet(1, 2)
+    model = VNet_CSE(1, 2)
     out = model(data)
     print(out.shape)

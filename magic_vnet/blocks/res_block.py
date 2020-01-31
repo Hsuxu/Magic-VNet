@@ -1,12 +1,10 @@
 import torch
 from torch import nn
 
-try:
-    from .convbnact import ConvBnAct3d, BottConvBnAct3d
-    from .squeeze_excitation import ChannelSELayer3D, SpatialSELayer3D, SpatialChannelSELayer3D
-except:
-    from convbnact import ConvBnAct3d, BottConvBnAct3d
-    from squeeze_excitation import ChannelSELayer3D, SpatialSELayer3D, SpatialChannelSELayer3D
+from .convbnact import ConvBnAct3d, BottConvBnAct3d
+from .squeeze_excitation import ChannelSELayer3D, SpatialSELayer3D, SpatialChannelSELayer3D
+
+__all__ = ('BottleNeck', 'ResBlock')
 
 
 class BasicResBlock(nn.Module):

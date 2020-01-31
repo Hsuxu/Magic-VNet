@@ -8,12 +8,13 @@ class ConvBnAct3d(nn.Module):
                  kernel_size=3,
                  padding=1,
                  stride=1,
+                 dilation=1,
                  norm_type=nn.BatchNorm3d,
                  act_type=nn.ReLU):
         super(ConvBnAct3d, self).__init__()
         self.norm_type = norm_type
         self.act_type = act_type
-        self.conv = nn.Conv3d(in_channels, out_channels, kernel_size, padding=padding, stride=stride)
+        self.conv = nn.Conv3d(in_channels, out_channels, kernel_size, padding=padding, stride=stride, dilation=dilation)
         if norm_type:
             # if isinstance(norm_type, nn.BatchNorm3d):
             #     if act_type:
@@ -36,6 +37,7 @@ class ConvBnAct3d(nn.Module):
             self.norm = norm_type(out_channels)
         if self.act_type:
             self.act = act_type()
+        self._init_weights()
 
     def forward(self, input):
         out = self.conv(input)
@@ -44,6 +46,18 @@ class ConvBnAct3d(nn.Module):
         if self.act_type:
             out = self.act(out)
         return out
+
+    def _init_weights(self):
+        for m in self.modules():
+            if isinstance(m, nn.Conv3d):
+                nn.init.kaiming_normal_(m.weight.data)
+                if hasattr(m, "bias") and m.bias is not None:
+                    nn.init.constant_(m.bias, 0)
+            elif isinstance(m, nn.BatchNorm3d):
+                if hasattr(m, "weight") and m.weight is not None:
+                    nn.init.constant_(m.weight, 1)
+                if hasattr(m, "bias") and m.bias is not None:
+                    nn.init.constant_(m.bias, 0)
 
 
 class BottConvBnAct3d(nn.Module):

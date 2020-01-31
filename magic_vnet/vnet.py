@@ -13,6 +13,7 @@ class VNet(nn.Module):
         drop_type = None
         feats = [16, 32, 64, 128, 256]
         num_blocks = [1, 2, 3, 3]
+        use_bottle_neck = False
         self._use_aspp = False
         if 'norm_type' in kwargs.keys():
             norm_type = kwargs['norm_type']
@@ -28,30 +29,32 @@ class VNet(nn.Module):
             drop_type = kwargs['drop_type']
         if 'use_aspp' in kwargs.keys():
             self._use_aspp = kwargs['use_aspp']
+        if 'use_bottle_neck' in kwargs.keys():
+            use_bottle_neck = kwargs['use_bottle_neck']
 
         self.in_conv = InputBlock(in_channels, feats[0],
                                   norm_type=norm_type,
                                   act_type=act_type)
 
         self.down1 = DownBlock(feats[0], feats[1], norm_type=norm_type, act_type=act_type, se_type=se_type,
-                               drop_type=drop_type, num_blocks=num_blocks[0])
+                               drop_type=drop_type, num_blocks=num_blocks[0], use_bottle_neck=use_bottle_neck)
         self.down2 = DownBlock(feats[1], feats[2], norm_type=norm_type, act_type=act_type, se_type=se_type,
-                               drop_type=drop_type, num_blocks=num_blocks[1])
+                               drop_type=drop_type, num_blocks=num_blocks[1], use_bottle_neck=use_bottle_neck)
         self.down3 = DownBlock(feats[2], feats[3], norm_type=norm_type, act_type=act_type, se_type=se_type,
-                               drop_type=drop_type, num_blocks=num_blocks[2])
+                               drop_type=drop_type, num_blocks=num_blocks[2], use_bottle_neck=use_bottle_neck)
         self.down4 = DownBlock(feats[3], feats[4], norm_type=norm_type, act_type=act_type, se_type=se_type,
-                               drop_type=drop_type, num_blocks=num_blocks[3])
+                               drop_type=drop_type, num_blocks=num_blocks[3], use_bottle_neck=use_bottle_neck)
         if self._use_aspp:
             self.aspp = ASPP(feats[4], dilations=[1, 2, 3, 4], norm_type=norm_type, act_type=act_type,
                              drop_type=drop_type)
-        self.up4 = UpBlock(feats[4], feats[4], norm_type=norm_type, act_type=act_type, se_type=se_type,
-                           drop_type=drop_type, num_blocks=num_blocks[3])
-        self.up3 = UpBlock(feats[4], feats[3], norm_type=norm_type, act_type=act_type, se_type=se_type,
-                           drop_type=drop_type, num_blocks=num_blocks[2])
-        self.up2 = UpBlock(feats[3], feats[2], norm_type=norm_type, act_type=act_type, se_type=se_type,
-                           drop_type=drop_type, num_blocks=num_blocks[1])
-        self.up1 = UpBlock(feats[2], feats[1], norm_type=norm_type, act_type=act_type, se_type=se_type,
-                           drop_type=drop_type, num_blocks=num_blocks[0])
+        self.up4 = UpBlock(feats[4], feats[3], feats[4], norm_type=norm_type, act_type=act_type, se_type=se_type,
+                           drop_type=drop_type, num_blocks=num_blocks[3], use_bottle_neck=use_bottle_neck)
+        self.up3 = UpBlock(feats[4], feats[2], feats[3], norm_type=norm_type, act_type=act_type, se_type=se_type,
+                           drop_type=drop_type, num_blocks=num_blocks[2], use_bottle_neck=use_bottle_neck)
+        self.up2 = UpBlock(feats[3], feats[1], feats[2], norm_type=norm_type, act_type=act_type, se_type=se_type,
+                           drop_type=drop_type, num_blocks=num_blocks[1], use_bottle_neck=use_bottle_neck)
+        self.up1 = UpBlock(feats[2], feats[0], feats[1], norm_type=norm_type, act_type=act_type, se_type=se_type,
+                           drop_type=drop_type, num_blocks=num_blocks[0], use_bottle_neck=use_bottle_neck)
         if num_class == 2:
             num_class = 1
 
@@ -98,8 +101,33 @@ class VNet_ASPP(VNet):
         super(VNet_ASPP, self).__init__(in_channels, num_class, use_aspp=True, **kwargs)
 
 
+class VBNet(VNet):
+    def __init__(self, in_channels, num_class, **kwargs):
+        super(VBNet, self).__init__(in_channels, num_class, use_bottle_neck=True, **kwargs)
+
+
+class VBNet_CSE(VBNet):
+    def __init__(self, in_channels, num_class, **kwargs):
+        super(VBNet_CSE, self).__init__(in_channels, num_class, se_type='cse', **kwargs)
+
+
+class VBNet_SSE(VBNet):
+    def __init__(self, in_channels, num_class, **kwargs):
+        super(VBNet_SSE, self).__init__(in_channels, num_class, se_type='sse', **kwargs)
+
+
+class VBNet_SCSE(VBNet):
+    def __init__(self, in_channels, num_class, **kwargs):
+        super(VBNet_SCSE, self).__init__(in_channels, num_class, se_type='scse', **kwargs)
+
+
+class VBNet_ASPP(VBNet):
+    def __init__(self, in_channels, num_class, **kwargs):
+        super(VBNet_ASPP, self).__init__(in_channels, num_class, use_aspp=True, **kwargs)
+
+
 if __name__ == '__main__':
     data = torch.rand((1, 1, 32, 32, 32))
-    model = VNet_CSE(1, 2)
+    model = VBNet_CSE(1, 2)
     out = model(data)
     print(out.shape)

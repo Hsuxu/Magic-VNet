@@ -3,6 +3,9 @@ import torch.nn as nn
 
 from .blocks import *
 
+__all__ = ('VNet', 'VNet_CSE', 'VNet_SSE', 'VNet_SCSE', 'VNet_ASPP',
+           'VBNet', 'VBNet_CSE', 'VBNet_SSE', 'VBNet_SCSE', 'VBNet_ASPP')
+
 
 class VNet(nn.Module):
     def __init__(self, in_channels, num_class, **kwargs):
@@ -15,6 +18,8 @@ class VNet(nn.Module):
         num_blocks = [1, 2, 3, 3]
         use_bottle_neck = False
         self._use_aspp = False
+        if num_class == 2:
+            num_class = 1
         if 'norm_type' in kwargs.keys():
             norm_type = kwargs['norm_type']
         if 'act_type' in kwargs.keys():
@@ -55,8 +60,6 @@ class VNet(nn.Module):
                            drop_type=drop_type, num_blocks=num_blocks[1], use_bottle_neck=use_bottle_neck)
         self.up1 = UpBlock(feats[2], feats[0], feats[1], norm_type=norm_type, act_type=act_type, se_type=se_type,
                            drop_type=drop_type, num_blocks=num_blocks[0], use_bottle_neck=use_bottle_neck)
-        if num_class == 2:
-            num_class = 1
 
         self.out_block = OutBlock(feats[1], num_class, norm_type, act_type)
 

@@ -1,6 +1,6 @@
 # [VNet](https://arxiv.org/abs/1606.04797) [PyTorch](https://pytorch.org/) Implements
 
-This repository including some extension implements based original [VNet](https://arxiv.org/abs/1606.04797) network. (PS: The original VNet is not implemented)
+This repository including some extension implements based original [VNet](https://arxiv.org/abs/1606.04797) network.
 
 ## Useage
 - Enter your project directory
@@ -29,3 +29,4 @@ from magic_vnet import *
 - [Attention U-Net: Learning Where to Look for the Pancreas](https://arxiv.org/abs/1804.03999)
 - [Rethinking Atrous Convolution for Semantic Image Segmentation](https://arxiv.org/abs/1706.05587)
 - [Encoder-Decoder with Atrous Separable Convolution for Semantic Image Segmentation](https://arxiv.org/abs/1802.02611) 
+- [Selective Kernel Networks](https://arxiv.org/abs/1903.06586)

@@ -9,12 +9,15 @@ class ConvBnAct3d(nn.Module):
                  padding=1,
                  stride=1,
                  dilation=1,
+                 groups=1,
                  norm_type=nn.BatchNorm3d,
                  act_type=nn.ReLU):
         super(ConvBnAct3d, self).__init__()
         self.norm_type = norm_type
         self.act_type = act_type
-        self.conv = nn.Conv3d(in_channels, out_channels, kernel_size, padding=padding, stride=stride, dilation=dilation)
+        self.conv = nn.Conv3d(in_channels, out_channels, kernel_size,
+                              padding=padding, stride=stride,
+                              dilation=dilation, groups=groups)
         if norm_type:
             # if isinstance(norm_type, nn.BatchNorm3d):
             #     if act_type:

@@ -27,6 +27,11 @@ class NestVNetTest(unittest.TestCase):
         out = model(self.data)
         self.assertEqual(out.size(), self.target_size)
 
+    def test_sknestvnet(self):
+        model = SK_NestVNet(1, 2, se_type=True)
+        out = model(self.data)
+        self.assertEqual(out.size(), self.target_size)
+
 
 if __name__ == '__main__':
     unittest.main()

@@ -27,6 +27,11 @@ class VNetTest(unittest.TestCase):
         out = model(self.data)
         self.assertEqual(out.size(), self.target_size)
 
+    def test_skvnet(self):
+        model = SKVNet(1, 2)
+        out = model(self.data)
+        self.assertEqual(out.size(), self.target_size)
+
 
 if __name__ == '__main__':
     unittest.main()

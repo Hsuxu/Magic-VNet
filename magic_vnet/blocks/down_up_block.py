@@ -5,6 +5,7 @@ import torch.nn.functional as F
 from .convbnact import ConvBnAct3d
 from .drop_block import Drop
 from .res_block import ResBlock, BottleNeck
+from .skunit import SK_Block
 
 
 class DownBlock(nn.Module):
@@ -13,19 +14,26 @@ class DownBlock(nn.Module):
     """
 
     def __init__(self, in_channels, out_channels,
+                 block_name='residual',
                  norm_type=nn.BatchNorm3d,
                  act_type=nn.ReLU,
                  se_type=None,
                  drop_type=None,
-                 num_blocks=1,
-                 use_bottle_neck=False):
+                 num_blocks=1):
         super(DownBlock, self).__init__()
+        assert block_name in ['residual', 'bottleneck', 'sk']
         self.down_conv = ConvBnAct3d(in_channels, out_channels, kernel_size=3, padding=1,
                                      stride=2, norm_type=norm_type, act_type=act_type)
-        layers = []
-        block = ResBlock(out_channels, norm_type=norm_type, act_type=act_type, se_type=se_type)
-        if use_bottle_neck:
+        if block_name == 'residual':
+            block = ResBlock(out_channels, norm_type=norm_type, act_type=act_type, se_type=se_type)
+        elif block_name == 'bottleneck':
             block = BottleNeck(out_channels, norm_type=norm_type, act_type=act_type, se_type=se_type)
+        elif block_name == 'sk':
+            block = SK_Block(out_channels, out_channels, norm_type=norm_type, act_type=act_type)
+        else:
+            raise NotImplementedError('{} not implemented'.format(block_name))
+
+        layers = []
         for i in range(num_blocks):
             layers.append(block)
         self.res_block = nn.Sequential(*layers)
@@ -90,10 +98,10 @@ class UpBlock(nn.Module):
     """
 
     def __init__(self, up_channels, ref_channels, out_channels,
+                 block_name='residual',
                  upper='interpolation', norm_type=nn.BatchNorm3d,
                  act_type=nn.ReLU, se_type=None,
-                 drop_type=None, num_blocks=1,
-                 use_bottle_neck=False):
+                 drop_type=None, num_blocks=1):
         super(UpBlock, self).__init__()
 
         assert upper in ['interpolation', 'upsample', 'convt'], "only 'interpolation'|'upsample'|'convt'  supported"
@@ -118,10 +126,17 @@ class UpBlock(nn.Module):
                                       padding=0, norm_type=False, act_type=act_type)
 
         self.drop = Drop(drop_type)
-        layers = []
-        block = ResBlock(out_channels, norm_type=norm_type, act_type=act_type, se_type=se_type)
-        if use_bottle_neck:
+
+        if block_name == 'residual':
+            block = ResBlock(out_channels, norm_type=norm_type, act_type=act_type, se_type=se_type)
+        elif block_name == 'bottleneck':
             block = BottleNeck(out_channels, norm_type=norm_type, act_type=act_type, se_type=se_type)
+        elif block_name == 'sk':
+            block = SK_Block(out_channels, out_channels, norm_type=norm_type, act_type=act_type)
+        else:
+            raise NotImplementedError('{} not implemented'.format(block_name))
+
+        layers = []
         for i in range(num_blocks):
             layers.append(block)
         self.res_block = nn.Sequential(*layers)

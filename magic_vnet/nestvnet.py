@@ -83,9 +83,9 @@ class NestVNet(nn.Module):
             self.aspp = ASPP(feats[4], dilations=[1, 2, 3, 4], norm_type=norm_type, act_type=act_type,
                              drop_type=drop_type)
 
-        self.out_block = [OutBlock(feats[0], num_class, norm_type, act_type)]
+        self.out_block = nn.ModuleList([OutBlock(feats[0], num_class, norm_type, act_type)])
         if self._deepsupervised:
-            self.out_block = [OutBlock(feats[0], num_class, norm_type, act_type)] * 4
+            self.out_block = nn.ModuleList([OutBlock(feats[0], num_class, norm_type, act_type)] * 4)
 
     def forward(self, input):
         if input.size(2) // 16 == 0 or input.size(3) // 16 == 0 or input.size(4) // 16 == 0:

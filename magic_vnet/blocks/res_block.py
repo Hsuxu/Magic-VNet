@@ -29,9 +29,9 @@ class BottleNeck(BasicResBlock):
         layers = []
         for i in range(num_layer):
             if i == num_layer - 1:
-                conv = BottConvBnAct3d(channels, ratio=ratio, norm_type=norm_type, act_type=act_type, final_act=True)
-            else:
                 conv = BottConvBnAct3d(channels, ratio=ratio, norm_type=norm_type, act_type=act_type, final_act=False)
+            else:
+                conv = BottConvBnAct3d(channels, ratio=ratio, norm_type=norm_type, act_type=act_type, final_act=True)
             layers.append(conv)
         if se_type == 'cse':
             cse_module = ChannelSELayer3D(channels, act_type=act_type)

@@ -65,6 +65,8 @@ class VNet(nn.Module):
 
         self.out_block = OutBlock(feats[1], num_class, norm_type, act_type)
 
+        init_weights(self)
+
     def forward(self, input):
         if input.size(2) // 16 == 0 or input.size(3) // 16 == 0 or input.size(4) // 16 == 0:
             raise RuntimeError("input tensor shape is too small")

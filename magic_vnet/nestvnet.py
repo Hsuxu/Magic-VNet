@@ -87,6 +87,8 @@ class NestVNet(nn.Module):
         if self._deepsupervised:
             self.out_block = nn.ModuleList([OutBlock(feats[0], num_class, norm_type, act_type)] * 4)
 
+        init_weights(self)
+
     def forward(self, input):
         if input.size(2) // 16 == 0 or input.size(3) // 16 == 0 or input.size(4) // 16 == 0:
             raise RuntimeError("input tensor shape is too small")

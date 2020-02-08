@@ -40,7 +40,6 @@ class ConvBnAct3d(nn.Module):
             self.norm = norm_type(out_channels)
         if self.act_type:
             self.act = act_type()
-        self._init_weights()
 
     def forward(self, input):
         out = self.conv(input)
@@ -50,17 +49,7 @@ class ConvBnAct3d(nn.Module):
             out = self.act(out)
         return out
 
-    def _init_weights(self):
-        for m in self.modules():
-            if isinstance(m, nn.Conv3d):
-                nn.init.kaiming_normal_(m.weight.data)
-                if hasattr(m, "bias") and m.bias is not None:
-                    nn.init.constant_(m.bias, 0)
-            elif isinstance(m, nn.BatchNorm3d):
-                if hasattr(m, "weight") and m.weight is not None:
-                    nn.init.constant_(m.weight, 1)
-                if hasattr(m, "bias") and m.bias is not None:
-                    nn.init.constant_(m.bias, 0)
+
 
 
 class BottConvBnAct3d(nn.Module):

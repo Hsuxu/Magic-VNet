@@ -1,6 +1,7 @@
 import torch
 from torch import nn
 from torch.nn import functional as F
+from .mabn import MABN3d, CenConv3d
 
 
 class ConvBnAct3d(nn.Module):
@@ -19,24 +20,12 @@ class ConvBnAct3d(nn.Module):
                               padding=padding, stride=stride,
                               dilation=dilation, groups=groups)
         if norm_type:
-            # if isinstance(norm_type, nn.BatchNorm3d):
-            #     if act_type:
-            #         if isinstance(act_type, nn.ReLU):
-            #             act = 'relu'
-            #             self.act_type = False
-            #         elif isinstance(act_type, nn.LeakyReLU):
-            #             act = 'leaky_relu'
-            #             self.act_type = False
-            #         elif isinstance(act_type, nn.ELU):
-            #             act = 'elu'
-            #             self.act_type = False
-            #         else:
-            #             act = 'none'
-            #     else:
-            #         act = 'none'
-            #     self.norm = norm_type(out_channels, activation=act)
-            # else:
-            #     self.norm = norm_type(out_channels)
+            if issubclass(self.norm_type, MABN3d):
+                self.conv = CenConv3d(in_channels, out_channels, kernel_size,
+                                      padding=padding,
+                                      stride=stride,
+                                      dilation=dilation,
+                                      groups=groups)
             self.norm = norm_type(out_channels)
         if self.act_type:
             self.act = act_type()
@@ -48,8 +37,6 @@ class ConvBnAct3d(nn.Module):
         if self.act_type:
             out = self.act(out)
         return out
-
-
 
 
 class BottConvBnAct3d(nn.Module):

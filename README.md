@@ -2,23 +2,19 @@
 
 This repository including some extension implements based original [VNet](https://arxiv.org/abs/1606.04797) network.
 
-## Useage
-- Enter your project directory
-```
-cd [path to your project]
-```
+## Requirements
+- PyTorch>1.1.0
+
+## Installation & Usage
 - Clone this repository
 ```
 git clone https://github.com/Hsuxu/Magic-VNet.git
 cd Magic-VNet
+python setup.py install
 ```
-- Install all requirements
-```
-pip install -r requirements.txt
-```
-- import all modules in your codes
-```
-from magic_vnet import *
+- import to your code
+```python
+from magic_vnet import VNet # network you need
 ```
 
 ## Reference
@@ -30,3 +26,4 @@ from magic_vnet import *
 - [Rethinking Atrous Convolution for Semantic Image Segmentation](https://arxiv.org/abs/1706.05587)
 - [Encoder-Decoder with Atrous Separable Convolution for Semantic Image Segmentation](https://arxiv.org/abs/1802.02611) 
 - [Selective Kernel Networks](https://arxiv.org/abs/1903.06586)
+- [Towards Stablizing Batch Statistics in Backward Propagation of Batch Normalization](https://arxiv.org/abs/2001.06838)

@@ -2,9 +2,9 @@ import setuptools
 
 setuptools.setup(
     # Meta-data
-    name="magic-vnet",
+    name="magic_vnet",
     author="HsuXu",
-    version='0.0.1',
+    version='0.0.2',
     author_email="hsuxu820@gmail.com",
     description="VNet family implemented by PyTorch",
     url="https://github.com/Hsuxu/Magic-VNet",

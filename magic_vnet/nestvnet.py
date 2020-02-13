@@ -9,9 +9,9 @@ __all__ = ('NestVNet', 'NestVNet_CSE', 'NestVNet_SSE', 'NestVNet_SCSE', 'NestVNe
            'SK_NestVNet', 'SK_NestVNet_ASPP')
 
 
-class NestVNet(nn.Module):
-    def __init__(self, in_channels, num_class, **kwargs):
-        super(NestVNet, self).__init__()
+class NestVNet_Base(nn.Module):
+    def __init__(self, in_channels, out_channels, **kwargs):
+        super(NestVNet_Base, self).__init__()
         norm_type = nn.BatchNorm3d
         act_type = nn.ReLU
         se_type = None
@@ -21,8 +21,6 @@ class NestVNet(nn.Module):
         block_name = 'residual'
         self._use_aspp = False
         self._deepsupervised = False
-        if num_class == 2:
-            num_class = 1
         if 'norm_type' in kwargs.keys():
             norm_type = kwargs['norm_type']
         if 'act_type' in kwargs.keys():
@@ -83,9 +81,9 @@ class NestVNet(nn.Module):
             self.aspp = ASPP(feats[4], dilations=[1, 2, 3, 4], norm_type=norm_type, act_type=act_type,
                              drop_type=drop_type)
 
-        self.out_block = nn.ModuleList([OutBlock(feats[0], num_class, norm_type, act_type)])
+        self.out_block = nn.ModuleList([OutBlock(feats[0], out_channels, norm_type, act_type)])
         if self._deepsupervised:
-            self.out_block = nn.ModuleList([OutBlock(feats[0], num_class, norm_type, act_type)] * 4)
+            self.out_block = nn.ModuleList([OutBlock(feats[0], out_channels, norm_type, act_type)] * 4)
 
         init_weights(self)
 
@@ -122,60 +120,66 @@ class NestVNet(nn.Module):
         return out
 
 
-class NestVNet_CSE(NestVNet):
-    def __init__(self, in_channels, num_class, **kwargs):
-        super(NestVNet_CSE, self).__init__(in_channels, num_class, se_type='cse', **kwargs)
+class NestVNet(NestVNet_Base):
+    def __init__(self, in_channels, out_channels, **kwargs):
+        super(NestVNet, self).__init__(in_channels, out_channels, **kwargs)
 
 
-class NestVNet_SSE(NestVNet):
-    def __init__(self, in_channels, num_class, **kwargs):
-        super(NestVNet_SSE, self).__init__(in_channels, num_class, se_type='sse', **kwargs)
+class NestVNet_CSE(NestVNet_Base):
+    def __init__(self, in_channels, out_channels, **kwargs):
+        super(NestVNet_CSE, self).__init__(in_channels, out_channels, se_type='cse', **kwargs)
 
 
-class NestVNet_SCSE(NestVNet):
-    def __init__(self, in_channels, num_class, **kwargs):
-        super(NestVNet_SCSE, self).__init__(in_channels, num_class, se_type='scse', **kwargs)
+class NestVNet_SSE(NestVNet_Base):
+    def __init__(self, in_channels, out_channels, **kwargs):
+        super(NestVNet_SSE, self).__init__(in_channels, out_channels, se_type='sse', **kwargs)
 
 
-class NestVNet_ASPP(NestVNet):
-    def __init__(self, in_channels, num_class, **kwargs):
-        super(NestVNet_ASPP, self).__init__(in_channels, num_class, use_aspp=True, **kwargs)
+class NestVNet_SCSE(NestVNet_Base):
+    def __init__(self, in_channels, out_channels, **kwargs):
+        super(NestVNet_SCSE, self).__init__(in_channels, out_channels, se_type='scse', **kwargs)
 
 
-class NestVBNet(NestVNet):
-    def __init__(self, in_channels, num_class, **kwargs):
-        super(NestVBNet, self).__init__(in_channels, num_class, block_name='bottleneck', **kwargs)
+class NestVNet_ASPP(NestVNet_Base):
+    def __init__(self, in_channels, out_channels, **kwargs):
+        super(NestVNet_ASPP, self).__init__(in_channels, out_channels, use_aspp=True, **kwargs)
+
+
+class NestVBNet(NestVNet_Base):
+    def __init__(self, in_channels, out_channels, **kwargs):
+        super(NestVBNet, self).__init__(in_channels, out_channels, block_name='bottleneck', **kwargs)
 
 
 class NestVBNet_CSE(NestVBNet):
-    def __init__(self, in_channels, num_class, **kwargs):
-        super(NestVBNet_CSE, self).__init__(in_channels, num_class, block_name='bottleneck', se_type='cse', **kwargs)
+    def __init__(self, in_channels, out_channels, **kwargs):
+        super(NestVBNet_CSE, self).__init__(in_channels, out_channels, block_name='bottleneck', se_type='cse', **kwargs)
 
 
 class NestVBNet_SSE(NestVBNet):
-    def __init__(self, in_channels, num_class, **kwargs):
-        super(NestVBNet_SSE, self).__init__(in_channels, num_class, block_name='bottleneck', se_type='sse', **kwargs)
+    def __init__(self, in_channels, out_channels, **kwargs):
+        super(NestVBNet_SSE, self).__init__(in_channels, out_channels, block_name='bottleneck', se_type='sse', **kwargs)
 
 
 class NestVBNet_SCSE(NestVBNet):
-    def __init__(self, in_channels, num_class, **kwargs):
-        super(NestVBNet_SCSE, self).__init__(in_channels, num_class, block_name='bottleneck', se_type='scse', **kwargs)
+    def __init__(self, in_channels, out_channels, **kwargs):
+        super(NestVBNet_SCSE, self).__init__(in_channels, out_channels, block_name='bottleneck', se_type='scse',
+                                             **kwargs)
 
 
 class NestVBNet_ASPP(NestVBNet):
-    def __init__(self, in_channels, num_class, **kwargs):
-        super(NestVBNet_ASPP, self).__init__(in_channels, num_class, use_aspp=True, **kwargs)
+    def __init__(self, in_channels, out_channels, **kwargs):
+        super(NestVBNet_ASPP, self).__init__(in_channels, out_channels, use_aspp=True, **kwargs)
 
 
-class SK_NestVNet(NestVNet):
-    def __init__(self, in_channels, num_class, **kwargs):
+class SK_NestVNet(NestVNet_Base):
+    def __init__(self, in_channels, out_channels, **kwargs):
         if 'se_type' in kwargs.keys():
             warnings.warn('`se_type` keyword not working in `SK_NestVNet`', UserWarning)
-        super(SK_NestVNet, self).__init__(in_channels, num_class, block_name='sk', **kwargs)
+        super(SK_NestVNet, self).__init__(in_channels, out_channels, block_name='sk', **kwargs)
 
 
-class SK_NestVNet_ASPP(NestVNet):
-    def __init__(self, in_channels, num_class, **kwargs):
+class SK_NestVNet_ASPP(NestVNet_Base):
+    def __init__(self, in_channels, out_channels, **kwargs):
         if 'se_type' in kwargs.keys():
             warnings.warn('`se_type` keyword not working in `SK_NestVNet_ASPP`', UserWarning)
-        super(SK_NestVNet_ASPP, self).__init__(in_channels, num_class, block_name='sk', use_aspp=True, **kwargs)
+        super(SK_NestVNet_ASPP, self).__init__(in_channels, out_channels, block_name='sk', use_aspp=True, **kwargs)

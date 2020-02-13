@@ -123,7 +123,7 @@ class UpBlock(nn.Module):
                                                      act_type=act_type))
 
         self.trans_conv = ConvBnAct3d(inner_channels + ref_channels, out_channels, kernel_size=1,
-                                      padding=0, norm_type=False, act_type=act_type)
+                                      padding=0, norm_type=norm_type, act_type=act_type)
 
         self.drop = Drop(drop_type)
 

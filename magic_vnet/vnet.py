@@ -4,14 +4,16 @@ import torch.nn as nn
 
 from .blocks import *
 
-__all__ = ('VNet', 'VNet_CSE', 'VNet_SSE', 'VNet_SCSE', 'VNet_ASPP',
-           'VBNet', 'VBNet_CSE', 'VBNet_SSE', 'VBNet_SCSE', 'VBNet_ASPP',
+__all__ = ('VNet', 'VNet_CSE', 'VNet_SSE', 'VNet_SCSE',
+           'VNet_ASPP', 'VNet_MABN',
+           'VBNet', 'VBNet_CSE', 'VBNet_SSE', 'VBNet_SCSE',
+           'VBNet_ASPP',
            'SKVNet', 'SKVNet_ASPP')
 
 
-class VNet(nn.Module):
-    def __init__(self, in_channels, num_class, **kwargs):
-        super(VNet, self).__init__()
+class VNetBase(nn.Module):
+    def __init__(self, in_channels, out_channels, **kwargs):
+        super(VNetBase, self).__init__()
         norm_type = nn.BatchNorm3d
         act_type = nn.ReLU
         se_type = None
@@ -20,8 +22,6 @@ class VNet(nn.Module):
         num_blocks = [1, 2, 3, 3]
         block_name = 'residual'
         self._use_aspp = False
-        if num_class == 2:
-            num_class = 1
         if 'norm_type' in kwargs.keys():
             norm_type = kwargs['norm_type']
         if 'act_type' in kwargs.keys():
@@ -63,7 +63,7 @@ class VNet(nn.Module):
         self.up1 = UpBlock(feats[2], feats[0], feats[1], norm_type=norm_type, act_type=act_type, se_type=se_type,
                            drop_type=drop_type, num_blocks=num_blocks[0], block_name=block_name)
 
-        self.out_block = OutBlock(feats[1], num_class, norm_type, act_type)
+        self.out_block = OutBlock(feats[1], out_channels, norm_type, act_type)
 
         init_weights(self)
 
@@ -88,60 +88,85 @@ class VNet(nn.Module):
         return out
 
 
-class VNet_CSE(VNet):
-    def __init__(self, in_channels, num_class, **kwargs):
-        super(VNet_CSE, self).__init__(in_channels, num_class, se_type='cse', **kwargs)
+class VNet(VNetBase):
+    def __init__(self, in_channels, out_channels, **kwargs):
+        super(VNet, self).__init__(in_channels, out_channels, **kwargs)
 
 
-class VNet_SSE(VNet):
-    def __init__(self, in_channels, num_class, **kwargs):
-        super(VNet_SSE, self).__init__(in_channels, num_class, se_type='sse', **kwargs)
+class VNet_MABN(VNetBase):
+    def __init__(self, in_channels, out_channels, **kwargs):
+        super(VNet_MABN, self).__init__(in_channels, out_channels, norm_type=MABN3d, **kwargs)
 
 
-class VNet_SCSE(VNet):
-    def __init__(self, in_channels, num_class, **kwargs):
-        super(VNet_SCSE, self).__init__(in_channels, num_class, se_type='scse', **kwargs)
+class VNet_CSE(VNetBase):
+    def __init__(self, in_channels, out_channels, **kwargs):
+        super(VNet_CSE, self).__init__(in_channels, out_channels, se_type='cse', **kwargs)
 
 
-class VNet_ASPP(VNet):
-    def __init__(self, in_channels, num_class, **kwargs):
-        super(VNet_ASPP, self).__init__(in_channels, num_class, use_aspp=True, **kwargs)
+class VNet_SSE(VNetBase):
+    def __init__(self, in_channels, out_channels, **kwargs):
+        super(VNet_SSE, self).__init__(in_channels, out_channels, se_type='sse', **kwargs)
 
 
-class VBNet(VNet):
-    def __init__(self, in_channels, num_class, **kwargs):
-        super(VBNet, self).__init__(in_channels, num_class, block_name='bottleneck', **kwargs)
+class VNet_SCSE(VNetBase):
+    def __init__(self, in_channels, out_channels, **kwargs):
+        super(VNet_SCSE, self).__init__(in_channels, out_channels, se_type='scse', **kwargs)
 
 
-class VBNet_CSE(VBNet):
-    def __init__(self, in_channels, num_class, **kwargs):
-        super(VBNet_CSE, self).__init__(in_channels, num_class, block_name='bottleneck', se_type='cse', **kwargs)
+class VNet_ASPP(VNetBase):
+    def __init__(self, in_channels, out_channels, **kwargs):
+        super(VNet_ASPP, self).__init__(in_channels, out_channels, use_aspp=True, **kwargs)
 
 
-class VBNet_SSE(VBNet):
-    def __init__(self, in_channels, num_class, **kwargs):
-        super(VBNet_SSE, self).__init__(in_channels, num_class, block_name='bottleneck', se_type='sse', **kwargs)
+class VBNet(VNetBase):
+    def __init__(self, in_channels, out_channels, **kwargs):
+        super(VBNet, self).__init__(in_channels, out_channels, block_name='bottleneck', **kwargs)
 
 
-class VBNet_SCSE(VBNet):
-    def __init__(self, in_channels, num_class, **kwargs):
-        super(VBNet_SCSE, self).__init__(in_channels, num_class, block_name='bottleneck', se_type='scse', **kwargs)
+class VBNet_MABN(VNetBase):
+    def __init__(self, in_channels, out_channels, **kwargs):
+        super(VBNet_MABN, self).__init__(in_channels, out_channels,
+                                         block_name='bottleneck',
+                                         norm_type=MABN3d, **kwargs)
 
 
-class VBNet_ASPP(VBNet):
-    def __init__(self, in_channels, num_class, **kwargs):
-        super(VBNet_ASPP, self).__init__(in_channels, num_class, block_name='bottleneck', use_aspp=True, **kwargs)
+class VBNet_CSE(VNetBase):
+    def __init__(self, in_channels, out_channels, **kwargs):
+        super(VBNet_CSE, self).__init__(in_channels, out_channels,
+                                        block_name='bottleneck',
+                                        se_type='cse', **kwargs)
 
 
-class SKVNet(VNet):
-    def __init__(self, in_channels, num_class, **kwargs):
+class VBNet_SSE(VNetBase):
+    def __init__(self, in_channels, out_channels, **kwargs):
+        super(VBNet_SSE, self).__init__(in_channels, out_channels,
+                                        block_name='bottleneck',
+                                        se_type='sse', **kwargs)
+
+
+class VBNet_SCSE(VNetBase):
+    def __init__(self, in_channels, out_channels, **kwargs):
+        super(VBNet_SCSE, self).__init__(in_channels, out_channels,
+                                         block_name='bottleneck',
+                                         se_type='scse', **kwargs)
+
+
+class VBNet_ASPP(VNetBase):
+    def __init__(self, in_channels, out_channels, **kwargs):
+        super(VBNet_ASPP, self).__init__(in_channels, out_channels,
+                                         block_name='bottleneck',
+                                         use_aspp=True, **kwargs)
+
+
+class SKVNet(VNetBase):
+    def __init__(self, in_channels, out_channels, **kwargs):
         if 'se_type' in kwargs.keys():
             warnings.warn('`se_type` keyword not working in `SKVNet`', UserWarning)
-        super(SKVNet, self).__init__(in_channels, num_class, block_name='sk', **kwargs)
+        super(SKVNet, self).__init__(in_channels, out_channels, block_name='sk', **kwargs)
 
 
-class SKVNet_ASPP(VNet):
-    def __init__(self, in_channels, num_class, **kwargs):
+class SKVNet_ASPP(VNetBase):
+    def __init__(self, in_channels, out_channels, **kwargs):
         if 'se_type' in kwargs.keys():
             warnings.warn('`se_type` keyword not working in `SKVNet_ASPP`', UserWarning)
-        super(SKVNet_ASPP, self).__init__(in_channels, num_class, block_name='sk', use_aspp=True, **kwargs)
+        super(SKVNet_ASPP, self).__init__(in_channels, out_channels, block_name='sk', use_aspp=True, **kwargs)

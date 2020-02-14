@@ -1,12 +1,16 @@
+import subprocess
 import setuptools
+
+# install inplace_abn 
+subprocess.call(["pip", "install", "git+https://github.com/mapillary/inplace_abn.git@v1.0.11"])
 
 setuptools.setup(
     # Meta-data
-    name="magic_vnet",
+    name="magic-vnet",
     author="HsuXu",
     version='0.0.2',
     author_email="hsuxu820@gmail.com",
-    description="VNet family implemented by PyTorch",
+    description="VNet family implemented in PyTorch",
     url="https://github.com/Hsuxu/Magic-VNet",
     classifiers=[
         "Programming Language :: Python :: 3",
@@ -16,7 +20,7 @@ setuptools.setup(
         "Programming Language :: Python :: 3.7",
     ],
 
-    # Versioning
+    # Version
     use_scm_version={"root": ".", "relative_to": __file__, "write_to": "magic_vnet/_version.py"},
 
     # Requirements

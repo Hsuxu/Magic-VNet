@@ -3,6 +3,11 @@ from torch import nn
 from torch.nn import functional as F
 from .mabn import MABN3d, CenConv3d
 
+try:
+    from inplace_abn import ABN, InPlaceABN, InPlaceABNSync
+except:
+    pass
+
 
 class ConvBnAct3d(nn.Module):
     def __init__(self, in_channels, out_channels,
@@ -11,22 +16,27 @@ class ConvBnAct3d(nn.Module):
                  stride=1,
                  dilation=1,
                  groups=1,
-                 norm_type=nn.BatchNorm3d,
+                 norm_type=ABN,
                  act_type=nn.ReLU):
         super(ConvBnAct3d, self).__init__()
         self.norm_type = norm_type
         self.act_type = act_type
+        self.groups = groups
         self.conv = nn.Conv3d(in_channels, out_channels, kernel_size,
-                              padding=padding, stride=stride,
-                              dilation=dilation, groups=groups)
-        if norm_type:
+                              padding=padding,
+                              stride=stride,
+                              dilation=dilation,
+                              groups=groups)
+        # print(self.norm_type)
+        if self.norm_type:
             if issubclass(self.norm_type, MABN3d):
                 self.conv = CenConv3d(in_channels, out_channels, kernel_size,
                                       padding=padding,
                                       stride=stride,
                                       dilation=dilation,
                                       groups=groups)
-            self.norm = norm_type(out_channels)
+            norm = self.__set_norm__(out_channels)
+            self.norm = norm
         if self.act_type:
             self.act = act_type()
 
@@ -37,6 +47,32 @@ class ConvBnAct3d(nn.Module):
         if self.act_type:
             out = self.act(out)
         return out
+
+    def __set_norm__(self, channels):
+
+        norm = self.norm_type(channels)
+        if issubclass(self.norm_type, ABN):
+            if self.act_type:
+                if issubclass(self.act_type, nn.ReLU):
+                    act = 'relu'
+                    self.act_type = False
+                elif issubclass(self.act_type, nn.LeakyReLU):
+                    act = 'leaky_relu'
+                    self.act_type = False
+                elif issubclass(self.act_type, nn.ELU):
+                    act = 'elu'
+                    self.act_type = False
+                else:
+                    act = 'identity'
+                norm = self.norm_type(channels, activation=act)
+            else:
+                act = 'identity'
+                norm = self.norm_type(channels, activation=act)
+        if issubclass(self.norm_type, nn.GroupNorm):
+            norm = self.norm_type(self.groups, channels)
+        if issubclass(self.norm_type, MABN3d):
+            norm = self.norm_type(channels)
+        return norm
 
 
 class BottConvBnAct3d(nn.Module):

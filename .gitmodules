@@ -1,3 +1,4 @@
 [submodule "magic_vnet/blocks/inplace_abn"]
 	path = magic_vnet/blocks/inplace_abn
 	url = https://github.com/mapillary/inplace_abn.git
+	branch = master
